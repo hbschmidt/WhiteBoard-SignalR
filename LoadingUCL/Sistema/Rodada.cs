@@ -7,5 +7,6 @@ namespace LoadingUCL.Sistema
 {
     public class Rodada
     {
+       
     }
 }

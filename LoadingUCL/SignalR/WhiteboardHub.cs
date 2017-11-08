@@ -42,10 +42,10 @@ namespace LoadingUCL.SignalR
                 ? new Jogador() {Desenhando = true, Nome = name}
                 : new Jogador() {Desenhando = false, Nome = name});
 
-            var indiceDesenhista = Controle.ListaJoadores.IndexOf(Controle.ListaJoadores.Find(x => x.Desenhando = true));
+            //var indiceDesenhista = Controle.ListaJoadores.IndexOf(Controle.ListaJoadores.Find(x => x.Desenhando = true));
 
-            Controle.ListaJoadores[indiceDesenhista].Desenhando = false;
-            Controle.ListaJoadores[indiceDesenhista + 1].Desenhando = true;
+            //Controle.ListaJoadores[indiceDesenhista].Desenhando = false;
+            //Controle.ListaJoadores[indiceDesenhista + 1].Desenhando = true;
 
             Clients.All.broadCastJogadores(Controle.ListaJoadores);
         }
