@@ -22,7 +22,7 @@ namespace LoadingUCL.SignalR
         {
 
 
-            Clients.Group(groupName).ChatJoined(name);
+            Clients.Group(groupName).ChatJoined(name, groupName);
 
         }
 
@@ -36,18 +36,30 @@ namespace LoadingUCL.SignalR
             Clients.Group(groupName).Chat(name, message);
         }
 
-        public void AddJogadorLista(string name)
+        public void AddJogadorLista(string name, string groupName)
         {
+            //if(Controle.ListaJoadores.Exists(x => x.Nome == name)) return;
+
             Controle.ListaJoadores.Add(Controle.ListaJoadores.Count == 0
                 ? new Jogador() {Desenhando = true, Nome = name}
                 : new Jogador() {Desenhando = false, Nome = name});
 
-            //var indiceDesenhista = Controle.ListaJoadores.IndexOf(Controle.ListaJoadores.Find(x => x.Desenhando = true));
+            int indiceDesenhista = Controle.ListaJoadores.IndexOf(Controle.ListaJoadores.Find(x => x.Desenhando = true));
 
-            //Controle.ListaJoadores[indiceDesenhista].Desenhando = false;
-            //Controle.ListaJoadores[indiceDesenhista + 1].Desenhando = true;
+            Controle.ListaJoadores[indiceDesenhista].Desenhando = false;
 
-            Clients.All.broadCastJogadores(Controle.ListaJoadores);
+            if (indiceDesenhista == Controle.ListaJoadores.Count - 1)
+            {
+                Controle.ListaJoadores[0].Desenhando = true;
+            }
+            else
+            {
+                Controle.ListaJoadores[indiceDesenhista + 1].Desenhando = true;
+            }
+           
+
+
+            Clients.Group(groupName).broadCastJogadores(Controle.ListaJoadores);
         }
 
 

@@ -6,7 +6,7 @@ var DrawState =
         Started: 0,
         Inprogress: 1,
         Completed: 2
-    }
+    };
 var DrawTool =
     {
         Pencil: 0,
@@ -15,7 +15,7 @@ var DrawTool =
         Rect: 3,
         Oval: 4,
         Erase: 5,
-    }
+    };
 var whiteboardHub;
 var tool_default = 'line';
 var canvas, context, canvaso, contexto;
@@ -244,7 +244,7 @@ $(document).ready(function () {
         canvas.addEventListener('mouseup', ev_canvas, false);
         canvas.addEventListener('mouseout', ev_canvas, false);
         context.clearRect(0, 0, canvas.width, canvas.height);
-        toggleBG1();
+        //toggleBG1();
     }
     catch (err) {
         alert(err.message);
@@ -368,7 +368,7 @@ tools.pencil = function () {
         }
         tool.started = false;
 
-    }
+    };
 };
 
 tools.rect = function () {
@@ -479,7 +479,7 @@ tools.text = function () {
             updatecanvas();
         }
     };
-}
+};
 
 tools.erase = function (ev) {
 
@@ -510,15 +510,15 @@ tools.erase = function (ev) {
         drawObject.CurrentY = ev._y;
         DrawIt(drawObject, true);
         tool.started = false;
-    }
-}
+    };
+};
 
 function fireEvent(element, event) {
     var evt;
     if (document.createEventObject) {
         // dispatch for IE
         evt = document.createEventObject();
-        return element.fireEvent('on' + event, evt)
+        return element.fireEvent('on' + event, evt);
     }
     else {
         // dispatch for firefox + others
@@ -546,7 +546,7 @@ function LoadImageIntoCanvas(bgImageUrl) {
         HEIGHT = img.height;
         ctx.clearRect(0, 0, image_View.width, image_View.height);
         ctx.drawImage(img, 1, 1, img.width, img.height);
-    }
+    };
     img.src = bgImageUrl;
 
     // Activate the default tool.
@@ -635,8 +635,7 @@ function JoinHub() {
         var name = $("#name").val();
         var name = $.trim(name);
 
-        whiteboardHub.Server.AddJogadorLista(name);
-
+        
         if (name.length > 0) {
             $("#userName").val(name);
 
@@ -647,7 +646,7 @@ function JoinHub() {
                     $("#divStatus").html("");
 
                     $("#divStatus").html("<i>" + name + " drawing...</i>");
-                    var drawObjectCollection = jQuery.parseJSON(message)
+                    var drawObjectCollection = jQuery.parseJSON(message);
                     for (var i = 0; i < drawObjectCollection.length; i++) {
                         DrawIt(drawObjectCollection[i], false);
                         if (drawObjectCollection[i].currentState) {
@@ -661,25 +660,31 @@ function JoinHub() {
             };
 
 
-            whiteboardHub.client.chatJoined = function (name) {
+            whiteboardHub.client.broadCastJogadores = function (listaJogadores) {
+                ////                Teste para listar jogadores
+                var xTable = document.getElementById("tableJogadoresLogadosBody");
+                xTable.innerHTML = "";
+                for (var i = 0; i < listaJogadores.length; i++) {
+                    var tr = document.createElement("tr");
+                    tr.innerHTML = "<td>" + listaJogadores[i].Nome + "</td>";
+
+                    if (listaJogadores[i].Desenhando === true) {
+                        tr.innerHTML += "<td>Desenhista</td>";
+                    } else {
+                        tr.innerHTML += "<td></td>";
+                    }
+                    
+                    tr.innerHTML += "<td>" + listaJogadores[i].Pontuacao + "</td>";
+                    xTable.appendChild(tr);
+
+                }
+            }
+
+
+            whiteboardHub.client.chatJoined = function (name, groupName) {
                 $("#divMessage").append("<span><i> <b>" + name + " entrou. <br/></b></i></span>");
                 $("#dialog-form").dialog("close");
-
-
-                
-                //listaJogadores.push(name);
-
-                ////                Teste para listar jogadores
-                //var xTable = document.getElementById("tableJogadoresLogados");
-                //xTable.innerHTML = "";
-                //for (var i = 0; i < listaJogadores.length; i++) {
-                //    var tr = document.createElement("tr");
-                //    tr.innerHTML = "<td>" + listaJogadores[i] + "</td>";
-                //    xTable.appendChild(tr);
-
-                //}
-
-            }
+            };
             whiteboardHub.client.chat = function (name, message) {
                 $("#divMessage").append("<span>" + name + ": " + message + "</span><br/>");
                 var objDiv = document.getElementById("divMessage");
@@ -697,6 +702,8 @@ function JoinHub() {
 
             $.connection.hub.start().done(function () {
                 whiteboardHub.server.joinGroup($("#groupName").val()).done(function () { whiteboardHub.server.joinChat($("#userName").val(), $("#groupName").val()); });
+
+                whiteboardHub.server.addJogadorLista($("#userName").val(), $("#groupName").val());
             });
 
             $("#btnSend").click(

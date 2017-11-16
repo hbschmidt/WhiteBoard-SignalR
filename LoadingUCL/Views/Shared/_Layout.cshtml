@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>Share Your Whiteboard</title>
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width" />
     @Styles.Render("~/Content/themes/base/css", "~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
@@ -87,8 +88,15 @@
     </div>
 
     <div id="divJogadores">
-        <table class="table" width="20%" id="tableJogadoresLogados">
-            
+        <table class="table table-dark" width="20%" id="tableJogadoresLogados">
+            <thead>
+                <tr>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Tafera</th>
+                    <th scope="col">Pontuação</th>
+                </tr>
+            </thead>
+            <tbody id="tableJogadoresLogadosBody"></tbody>
         </table>
     </div>
 
