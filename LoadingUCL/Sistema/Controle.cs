@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LoadingUCL.Sistema
 {
@@ -6,18 +7,51 @@ namespace LoadingUCL.Sistema
     {
         public static List<Jogador> ListaJoadores = new List<Jogador>();
 
-        public static List<string>ListaDeDesenhos = new List<string>();
+        public static List<string> ListaDeDesenhos = new List<string>();
+
+        public static bool PartidaIniciada = false;
+
+        public static string PalavraRodada;
 
         static Controle()
         {
             ListaDeDesenhos.Add("casa");
             ListaDeDesenhos.Add("aviao");
+            ListaDeDesenhos.Add("carro");
+            ListaDeDesenhos.Add("faculdade");
+            ListaDeDesenhos.Add("igreja");
+            ListaDeDesenhos.Add("cinema");
+            ListaDeDesenhos.Add("futebol");
+            ListaDeDesenhos.Add("camisa");
+            ListaDeDesenhos.Add("praia");
+            ListaDeDesenhos.Add("tênis");
+            ListaDeDesenhos.Add("computador");
+            ListaDeDesenhos.Add("cafeteira");
+            ListaDeDesenhos.Add("arvore");
+            ListaDeDesenhos.Add("cavalo");
+            ListaDeDesenhos.Add("cachorro");
+            ListaDeDesenhos.Add("balão");
+            ListaDeDesenhos.Add("festa");
+            ListaDeDesenhos.Add("montanha");
+            ListaDeDesenhos.Add("piramide");
+            ListaDeDesenhos.Add("buraco negro");
+        }
+
+        public static void SortearPalavra()
+        {
+            var valores = DateTime.Now.Millisecond;
+
+            var rdn = new Random(valores);
+
+            PalavraRodada = ListaDeDesenhos[rdn.Next(0, ListaDeDesenhos.Count - 1)];
 
         }
 
+
+
         public static void PassarToken()
         {
-            int indiceDesenhista = ListaJoadores.IndexOf(ListaJoadores.Find(x => x.Desenhando = true));
+            var indiceDesenhista = ListaJoadores.IndexOf(ListaJoadores.Find(x => x.Desenhando = true));
 
             ListaJoadores[indiceDesenhista].Desenhando = false;
 

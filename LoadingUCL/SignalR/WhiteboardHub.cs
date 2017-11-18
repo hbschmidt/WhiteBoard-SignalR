@@ -45,10 +45,18 @@ namespace LoadingUCL.SignalR
                 : new Jogador() {Desenhando = false, Nome = name});
 
            
-           
-
-
             Clients.Group(groupName).broadCastJogadores(Controle.ListaJoadores);
+
+
+            if (Controle.ListaJoadores.Count != 2 || Controle.PartidaIniciada) return;
+
+            Controle.PartidaIniciada = true;
+            Clients.Group(groupName).broadCastInicioPartida(Controle.ListaJoadores, groupName);
+        }
+
+        public bool VerficarSePodeDesenhar(string name, string groupName)
+        {
+            return Controle.ListaJoadores.Find(x => x.Nome == name).Desenhando;
         }
 
 

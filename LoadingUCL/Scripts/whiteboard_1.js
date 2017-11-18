@@ -635,7 +635,7 @@ function JoinHub() {
         var name = $("#name").val();
         var name = $.trim(name);
 
-        
+
         if (name.length > 0) {
             $("#userName").val(name);
 
@@ -661,7 +661,7 @@ function JoinHub() {
 
 
             whiteboardHub.client.broadCastJogadores = function (listaJogadores) {
-                ////                Teste para listar jogadores
+                ////                listar jogadores
                 var xTable = document.getElementById("tableJogadoresLogadosBody");
                 xTable.innerHTML = "";
                 for (var i = 0; i < listaJogadores.length; i++) {
@@ -673,12 +673,32 @@ function JoinHub() {
                     } else {
                         tr.innerHTML += "<td></td>";
                     }
-                    
+
                     tr.innerHTML += "<td>" + listaJogadores[i].Pontuacao + "</td>";
                     xTable.appendChild(tr);
 
                 }
             }
+
+            whiteboardHub.client.broadCastInicioPartida = function (listaJogadores, grupo) {
+               
+                whiteboardHub.server.verficarSePodeDesenhar($("#userName").val(), grupo).done(function (result) {
+                    if (result) {
+                        alert("Sua vez de desenhar " + name);
+                    } else {
+                        alert("Sua vez de adivinhar" + name);
+                    }
+                });
+                
+            }
+
+            //whiteboardHub.client.broadRespostaSePodeDesenhar = function(podeDesenhar) {
+            //    if (podeDesenhar === true) {
+            //        $("#tableWhiteBoard").prop("disabled", true);
+            //    } else {
+            //        $("#tableWhiteBoard").prop("disabled", true);
+            //    }
+            //}
 
 
             whiteboardHub.client.chatJoined = function (name, groupName) {
@@ -695,6 +715,7 @@ function JoinHub() {
                     alert("Você acertou!!!!");
                 }
             };
+
             var sendMessage = function () {
                 whiteboardHub.sendChat($(".chat-message").val(), $("#groupName").val(), $("#userName").val());
             };
@@ -719,4 +740,6 @@ function JoinHub() {
 
         }
     });
+
+
 }
