@@ -44,18 +44,7 @@ namespace LoadingUCL.SignalR
                 ? new Jogador() {Desenhando = true, Nome = name}
                 : new Jogador() {Desenhando = false, Nome = name});
 
-            int indiceDesenhista = Controle.ListaJoadores.IndexOf(Controle.ListaJoadores.Find(x => x.Desenhando = true));
-
-            Controle.ListaJoadores[indiceDesenhista].Desenhando = false;
-
-            if (indiceDesenhista == Controle.ListaJoadores.Count - 1)
-            {
-                Controle.ListaJoadores[0].Desenhando = true;
-            }
-            else
-            {
-                Controle.ListaJoadores[indiceDesenhista + 1].Desenhando = true;
-            }
+           
            
 
 
