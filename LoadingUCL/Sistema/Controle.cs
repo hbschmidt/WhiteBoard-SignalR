@@ -13,6 +13,12 @@ namespace LoadingUCL.Sistema
 
         public static string PalavraRodada;
 
+        public static int QuantidadeRodadas = 0;
+
+        public static int RodadaAtual = 0;
+
+        public static int MinimoJogadores;
+
         static Controle()
         {
             ListaDeDesenhos.Add("casa");

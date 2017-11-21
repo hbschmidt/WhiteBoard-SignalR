@@ -59,6 +59,23 @@ namespace LoadingUCL.SignalR
             return Controle.ListaJoadores.Find(x => x.Nome == name).Desenhando;
         }
 
+        public int QuantidadeDeJogadores()
+        {
+            return Controle.ListaJoadores.Count;
+        }
+
+        public void ReceberConfiguracao(int rodadas, int jogadores)
+        {
+            Controle.QuantidadeRodadas = rodadas;
+            Controle.MinimoJogadores = jogadores;
+        }
+
+        public string PalavraDaRodada(bool sortear)
+        {
+            if (sortear) Controle.SortearPalavra();
+            return Controle.PalavraRodada;
+        }
+
 
     }
 }

@@ -148,5 +148,39 @@
             <input id="btnJoin" type="button" class="btn btn-primary btn-lg" value="Entrar">
         </div>
     </div>
+    
+    <div id="config-dialog-form" style="display: none">
+        <div class="modal-header" style="font-size: medium">
+            <b>Como primeiro jogador, sua primeira missão é configurar da partida!!</b>
+        </div>
+        <br />
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <label for="qtdRodadas" class="form-control-label">Quantas rodadas?</label>
+                    <input type="number" class="form-control bfh-number" id="qtdRodadas" data-min="2" data-max="10">
+
+                    <label for="qtdMinJogadores" class="form-control-label">Qual é quantidade mínima de amigos para jogar?</label>
+                    <input type="number" class="form-control bfh-number" id="qtdMinJogadores" data-min="2" data-max="10">
+                    
+                </div>                
+            </form>
+        </div>
+        <div class="modal-footer">
+            <input id="btnConfigurar" type="button" class="btn btn-primary btn-lg" value="Entrar">
+        </div>
+    </div>
+    
+<div id="acaoRodada-dialog-form" style="display: none">
+    <div class="modal-header" style="font-size: medium">
+        <b>Yuuuuupiii, a rodada já vai começar!!</b>
+    </div>
+    <br/>
+    <div class="modal-body" id ="acaoRodadaDivTexto">
+    </div>
+    <div class="modal-footer">
+        <input id="btnAcao" type="button" class="btn btn-primary btn-lg" value="Entrar">
+    </div>
+</div>
 
 }

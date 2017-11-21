@@ -681,15 +681,10 @@ function JoinHub() {
             }
 
             whiteboardHub.client.broadCastInicioPartida = function (listaJogadores, grupo) {
-               
+
                 whiteboardHub.server.verficarSePodeDesenhar($("#userName").val(), grupo).done(function (result) {
-                    if (result) {
-                        alert("Sua vez de desenhar " + name);
-                    } else {
-                        alert("Sua vez de adivinhar" + name);
-                    }
+                    AcaoDaRodada(result);
                 });
-                
             }
 
             //whiteboardHub.client.broadRespostaSePodeDesenhar = function(podeDesenhar) {
@@ -724,6 +719,12 @@ function JoinHub() {
             $.connection.hub.start().done(function () {
                 whiteboardHub.server.joinGroup($("#groupName").val()).done(function () { whiteboardHub.server.joinChat($("#userName").val(), $("#groupName").val()); });
 
+                whiteboardHub.server.quantidadeDeJogadores().done(function (quantidade) {
+                    if (quantidade === 0) {
+                        ConfigurarPartida();
+                    }
+                });
+
                 whiteboardHub.server.addJogadorLista($("#userName").val(), $("#groupName").val());
             });
 
@@ -740,6 +741,57 @@ function JoinHub() {
 
         }
     });
+}
 
+function ConfigurarPartida() {
+
+    $("#config-dialog-form").dialog({ autoOpen: false, width: 500, modal: true, closeOnEscape: false });
+    $("#config-dialog-form").dialog("open");
+    $("#qtdMinJogadores").keypress(function (e) {
+        if (e && e.keyCode == 13) //apertando enter Henrique
+        {
+            $("#btnConfigurar").click();
+        }
+    });
+
+    $("#btnConfigurar").click(function () {
+        whiteboardHub.server.receberConfiguracao($("#qtdRodadas").val(), $("#qtdMinJogadores").val());
+
+        $("#config-dialog-form").append("<b> Configurações realizadas com sucesso!!!</b>");
+        setTimeout(function () { $("#config-dialog-form").dialog("close"); }, 1000);
+
+    });
 
 }
+
+function AcaoDaRodada(pintar) {
+
+    if (pintar) {
+
+        var palavra = whiteboardHub.server.palavraDaRodada(true).done(function (palavra) {
+            $('#acaoRodadaDivTexto')
+                .append("<h1 style=\"text-align: center\" > É a sua vez de desenhar </h1>");
+            $('#acaoRodadaDivTexto')
+                .append("<h3 style=\"text- align: center\"> A palavra escolhida é <b> " +
+                palavra +
+                " </b> </h3>");
+        });
+    } else {
+        $('#acaoRodadaDivTexto')
+            .append("<h1 style=\"text-align: center\" >É sua vez de tentar adivinhar, boa sorte!! </h1>");
+    }
+
+    $("#acaoRodada-dialog-form").dialog({ autoOpen: false, width: 500, modal: true, closeOnEscape: false });
+    $("#acaoRodada-dialog-form").dialog("open");
+    $("#qtdMinJogadores").keypress(function (e) {
+        if (e && e.keyCode == 13) //apertando enter Henrique
+        {
+            $("#btnAxy").click();
+        }
+    });
+
+    $("#btnAcao").click(function () {
+        $("#acaoRodada-dialog-form").dialog("close");
+    });
+}
+
