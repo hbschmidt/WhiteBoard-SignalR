@@ -5,6 +5,8 @@ namespace LoadingUCL.Sistema
 {
     public static class Controle
     {
+        public const int PontuacaoMaximaNaRodada = 50;
+
         public static List<Jogador> ListaJoadores = new List<Jogador>();
 
         public static List<string> ListaDeDesenhos = new List<string>();
@@ -12,6 +14,8 @@ namespace LoadingUCL.Sistema
         public static bool PartidaIniciada = false;
 
         public static string PalavraRodada;
+
+        public static int JogadoresQueAcertaramNaRodada = 0;
 
         public static int QuantidadeRodadas = 0;
 
@@ -53,8 +57,6 @@ namespace LoadingUCL.Sistema
 
         }
 
-
-
         public static void PassarToken()
         {
             var indiceDesenhista = ListaJoadores.IndexOf(ListaJoadores.Find(x => x.Desenhando = true));
@@ -71,5 +73,11 @@ namespace LoadingUCL.Sistema
             }
         }
 
+        public static void SetarPontuacao(string nomeJogador)
+        {
+            var jogador = ListaJoadores.Find(x => x.Nome == nomeJogador);
+
+            jogador.Pontuacao = (PontuacaoMaximaNaRodada / Controle.ListaJoadores.Count) * (Controle.ListaJoadores.Count - JogadoresQueAcertaramNaRodada);
+        }
     }
 }

@@ -48,9 +48,10 @@ namespace LoadingUCL.SignalR
             Clients.Group(groupName).broadCastJogadores(Controle.ListaJoadores);
 
 
-            if (Controle.ListaJoadores.Count != 2 || Controle.PartidaIniciada) return;
+            if (Controle.ListaJoadores.Count != Controle.MinimoJogadores || Controle.PartidaIniciada) return;
 
             Controle.PartidaIniciada = true;
+
             Clients.Group(groupName).broadCastInicioPartida(Controle.ListaJoadores, groupName);
         }
 
@@ -76,6 +77,20 @@ namespace LoadingUCL.SignalR
             return Controle.PalavraRodada;
         }
 
+        public void InicializarDadosDeRodada()
+        {
+            Controle.JogadoresQueAcertaramNaRodada = 0;
+            Controle.RodadaAtual++;
+        }
+
+        public bool VerficarMensagemPontuar(string message, string nomeJogador)
+        {
+            if (!string.Equals(message, Controle.PalavraRodada, StringComparison.CurrentCultureIgnoreCase))
+                return false;
+            Controle.SetarPontuacao(nomeJogador);
+            Controle.JogadoresQueAcertaramNaRodada++;
+            return true;
+        }
 
     }
 }

@@ -238,12 +238,12 @@ $(document).ready(function () {
         // Activate the default tool.
         SelectTool(tool_default);
 
-        //// Attach the mousedown, mousemove and mouseup event listeners.
-        //canvas.addEventListener('mousedown', ev_canvas, false);
-        //canvas.addEventListener('mousemove', ev_canvas, false);
-        //canvas.addEventListener('mouseup', ev_canvas, false);
-        //canvas.addEventListener('mouseout', ev_canvas, false);
-        //context.clearRect(0, 0, canvas.width, canvas.height);
+        // Attach the mousedown, mousemove and mouseup event listeners.
+        canvas.addEventListener('mousedown', ev_canvas, false);
+        canvas.addEventListener('mousemove', ev_canvas, false);
+        canvas.addEventListener('mouseup', ev_canvas, false);
+        canvas.addEventListener('mouseout', ev_canvas, false);
+        context.clearRect(0, 0, canvas.width, canvas.height);
         //toggleBG1();
     }
     catch (err) {
@@ -661,23 +661,54 @@ function JoinHub() {
 
 
             whiteboardHub.client.broadCastJogadores = function (listaJogadores) {
-                MontarDivListaJogadores(listaJogadores);
+                ////                listar jogadores
+                var xTable = document.getElementById("tableJogadoresLogadosBody");
+                xTable.innerHTML = "";
+                for (var i = 0; i < listaJogadores.length; i++) {
+                    var tr = document.createElement("tr");
+                    tr.innerHTML = "<td>" + listaJogadores[i].Nome + "</td>";
+
+                    if (listaJogadores[i].Desenhando === true) {
+                        tr.innerHTML += "<td>Desenhista</td>";
+                    } else {
+                        tr.innerHTML += "<td></td>";
+                    }
+
+                    tr.innerHTML += "<td>" + listaJogadores[i].Pontuacao + "</td>";
+                    xTable.appendChild(tr);
+
+                }
             }
 
             whiteboardHub.client.broadCastInicioPartida = function (listaJogadores, grupo) {
 
                 whiteboardHub.server.verficarSePodeDesenhar($("#userName").val(), grupo).done(function (result) {
-                    AcaoDaRodada(result, listaJogadores);
-                });               
+                    AcaoDaRodada(result);
+                });
             }
 
-            
+            //whiteboardHub.client.broadRespostaSePodeDesenhar = function(podeDesenhar) {
+            //    if (podeDesenhar === true) {
+            //        $("#tableWhiteBoard").prop("disabled", true);
+            //    } else {
+            //        $("#tableWhiteBoard").prop("disabled", true);
+            //    }
+            //}
+
+
             whiteboardHub.client.chatJoined = function (name, groupName) {
                 $("#divMessage").append("<span><i> <b>" + name + " entrou. <br/></b></i></span>");
                 $("#dialog-form").dialog("close");
             };
             whiteboardHub.client.chat = function (name, message) {
-                VerificarMessagemEnviada(name, message);                
+                $("#divMessage").append("<span>" + name + ": " + message + "</span><br/>");
+                var objDiv = document.getElementById("divMessage");
+                objDiv.scrollTop = objDiv.scrollHeight;
+
+                //teste para verificação de desenho
+                if (message == "bandeira") {
+                    alert("Você acertou!!!!");
+                }
             };
 
             var sendMessage = function () {
@@ -733,92 +764,34 @@ function ConfigurarPartida() {
 
 }
 
-function AcaoDaRodada(pintar, listaJogadores) {
+function AcaoDaRodada(pintar) {
 
-    MontarDivListaJogadores(listaJogadores);
+    if (pintar) {
 
-    if (pintar)
-    {
-
-        var palavraEscolhida = whiteboardHub.server.palavraDaRodada(true).done(function (palavra) {
+        var palavra = whiteboardHub.server.palavraDaRodada(true).done(function (palavra) {
             $('#acaoRodadaDivTexto')
                 .append("<h1 style=\"text-align: center\" > É a sua vez de desenhar </h1>");
             $('#acaoRodadaDivTexto')
-                .append("<h3 style=\"text-align: center\"> A palavra escolhida é <b> " +
+                .append("<h3 style=\"text- align: center\"> A palavra escolhida é <b> " +
                 palavra +
                 " </b> </h3>");
-            //enableElements($('#container').children());
         });
-
-        whiteboardHub.server.inicializarDadosDeRodada();
-
-        // Attach the mousedown, mousemove and mouseup event listeners.
-        canvas.addEventListener('mousedown', ev_canvas, false);
-        canvas.addEventListener('mousemove', ev_canvas, false);
-        canvas.addEventListener('mouseup', ev_canvas, false);
-        canvas.addEventListener('mouseout', ev_canvas, false);
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        $("#acaoRodada-dialog-form").dialog({ autoOpen: false, width: 500, modal: true, closeOnEscape: false });
-        $("#acaoRodada-dialog-form").dialog("open");
-        $("#qtdMinJogadores").keypress(function (e) {
-            if (e && e.keyCode == 13) //apertando enter Henrique
-            {
-                $("#btnAxy").click();
-            }
-        });
-
     } else {
         $('#acaoRodadaDivTexto')
             .append("<h1 style=\"text-align: center\" >É sua vez de tentar adivinhar, boa sorte!! </h1>");
-
-        canvas.removeEventListener('mousedown', ev_canvas, false);
-        canvas.removeEventListener('mousemove', ev_canvas, false);
-        canvas.removeEventListener('mouseup', ev_canvas, false);
-        canvas.removeEventListener('mouseout', ev_canvas, false);
-
     }
 
-    
+    $("#acaoRodada-dialog-form").dialog({ autoOpen: false, width: 500, modal: true, closeOnEscape: false });
+    $("#acaoRodada-dialog-form").dialog("open");
+    $("#qtdMinJogadores").keypress(function (e) {
+        if (e && e.keyCode == 13) //apertando enter Henrique
+        {
+            $("#btnAxy").click();
+        }
+    });
 
     $("#btnAcao").click(function () {
         $("#acaoRodada-dialog-form").dialog("close");
     });
-}
-
-function MontarDivListaJogadores(listaJogadores) {
-    ////                listar jogadores
-    var xTable = document.getElementById("tableJogadoresLogadosBody");
-    xTable.innerHTML = "";
-    for (var i = 0; i < listaJogadores.length; i++) {
-        var tr = document.createElement("tr");
-        tr.innerHTML = "<td>" + listaJogadores[i].Nome + "</td>";
-
-        if (listaJogadores[i].Desenhando === true) {
-            tr.innerHTML += "<td>Desenhista</td>";
-        } else {
-            tr.innerHTML += "<td></td>";
-        }
-
-        tr.innerHTML += "<td>" + listaJogadores[i].Pontuacao + "</td>";
-        xTable.appendChild(tr);
-
-    }
-}
-
-function VerificarMessagemEnviada(name, message) {
-
-    whiteboardHub.server.verficarMensagemPontuar(message, name).done(function (result) {
-        if (result && name == $("#userName").val() ) {
-            alert("Voce Acertou");
-        }
-    });
-
-
-    //Preencher o chat
-    $("#divMessage").append("<span>" + name + ": " + message + "</span><br/>");
-    var objDiv = document.getElementById("divMessage");
-    objDiv.scrollTop = objDiv.scrollHeight;
-
 }
 
