@@ -668,16 +668,35 @@ function JoinHub() {
 
                 whiteboardHub.server.verficarSePodeDesenhar($("#userName").val(), grupo).done(function (result) {
                     AcaoDaRodada(result, listaJogadores);
-                });               
+                });
             }
 
-            
+            whiteboardHub.client.verficarFimDaRodada = function (result) {
+                statusRodada(result);
+            }
+
             whiteboardHub.client.chatJoined = function (name, groupName) {
                 $("#divMessage").append("<span><i> <b>" + name + " entrou. <br/></b></i></span>");
                 $("#dialog-form").dialog("close");
             };
+
             whiteboardHub.client.chat = function (name, message) {
-                VerificarMessagemEnviada(name, message);                
+                VerificarMessagemEnviada(name, message);
+
+                whiteboardHub.server.verificouTodasAsVezes().done(function (result) {
+
+                    if (result) {
+                        whiteboardHub.server.verficarFimDaRodada().done(function (fimDaRodada) {
+
+                            if (fimDaRodada) {
+                                whiteboardHub.server.inicializarRodada();
+                            }
+
+                        });
+                    }
+
+                });
+
             };
 
             var sendMessage = function () {
@@ -737,17 +756,15 @@ function AcaoDaRodada(pintar, listaJogadores) {
 
     MontarDivListaJogadores(listaJogadores);
 
-    if (pintar)
-    {
+    if (pintar) {
 
-        var palavraEscolhida = whiteboardHub.server.palavraDaRodada(true).done(function (palavra) {
+        whiteboardHub.server.palavraDaRodada(true).done(function (palavra) {
             $('#acaoRodadaDivTexto')
                 .append("<h1 style=\"text-align: center\" > É a sua vez de desenhar </h1>");
             $('#acaoRodadaDivTexto')
                 .append("<h3 style=\"text-align: center\"> A palavra escolhida é <b> " +
                 palavra +
                 " </b> </h3>");
-            //enableElements($('#container').children());
         });
 
         whiteboardHub.server.inicializarDadosDeRodada();
@@ -759,14 +776,7 @@ function AcaoDaRodada(pintar, listaJogadores) {
         canvas.addEventListener('mouseout', ev_canvas, false);
         context.clearRect(0, 0, canvas.width, canvas.height);
 
-        $("#acaoRodada-dialog-form").dialog({ autoOpen: false, width: 500, modal: true, closeOnEscape: false });
-        $("#acaoRodada-dialog-form").dialog("open");
-        $("#qtdMinJogadores").keypress(function (e) {
-            if (e && e.keyCode == 13) //apertando enter Henrique
-            {
-                $("#btnAxy").click();
-            }
-        });
+        AbrirModalAcaoRodada();
 
     } else {
         $('#acaoRodadaDivTexto')
@@ -777,9 +787,10 @@ function AcaoDaRodada(pintar, listaJogadores) {
         canvas.removeEventListener('mouseup', ev_canvas, false);
         canvas.removeEventListener('mouseout', ev_canvas, false);
 
+        AbrirModalAcaoRodada();
     }
 
-    
+
 
     $("#btnAcao").click(function () {
         $("#acaoRodada-dialog-form").dialog("close");
@@ -806,19 +817,51 @@ function MontarDivListaJogadores(listaJogadores) {
     }
 }
 
+var pararVerificarMensagemEnviada = false;
+var vTrocarRodada = false;
+
 function VerificarMessagemEnviada(name, message) {
 
-    whiteboardHub.server.verficarMensagemPontuar(message, name).done(function (result) {
-        if (result && name == $("#userName").val() ) {
-            alert("Voce Acertou");
+    whiteboardHub.server.verficarMensagemPontuar(message, name, $("#userName").val()).done(function (result) {
+        if (result && name == $("#userName").val()) {
+
+            var msgAcerto = "<button type=\"button\" class=\"btn btn-succes btn-blocks\">Parabéns!!! <span class=\"badge\">Você acertou a palavra</span></button>";
+
+            $("#divMessage").append("<span>" + msgAcerto + "</span><br/>");
+            var objDiv = document.getElementById("divMessage");
+            objDiv.scrollTop = objDiv.scrollHeight;
+        
+        } else if (result && name != $("#userName").val()) {
+
+            var msgAcerto = "<button type=\"button\" class=\"btn btn-succes btn-blocks\">" + name + " : <span class=\"badge\">Acertou a palavra</span></button>";
+
+            $("#divMessage").append("<span>" + msgAcerto + "</span><br/>");
+            var objDiv = document.getElementById("divMessage");
+            objDiv.scrollTop = objDiv.scrollHeight;
+
+        } else {
+            $("#divMessage").append("<span>" + name + ": " + message + "</span><br/>");
+            var objDiv = document.getElementById("divMessage");
+            objDiv.scrollTop = objDiv.scrollHeight;
         }
     });
+}
 
+function AbrirModalAcaoRodada() {
 
-    //Preencher o chat
-    $("#divMessage").append("<span>" + name + ": " + message + "</span><br/>");
-    var objDiv = document.getElementById("divMessage");
-    objDiv.scrollTop = objDiv.scrollHeight;
+    $("#acaoRodada-dialog-form").dialog({ autoOpen: false, width: 500, modal: true, closeOnEscape: false });
+    $("#acaoRodada-dialog-form").dialog("open");
+    $("#qtdMinJogadores").keypress(function (e) {
+        if (e && e.keyCode == 13) //apertando enter Henrique
+        {
+            $("#btnAxy").click();
+        }
+    });
+}
 
+function statusRodada(terminou) {
+    if (terminou) {
+        whiteboardHub.server.inicializarRodada();
+    }
 }
 

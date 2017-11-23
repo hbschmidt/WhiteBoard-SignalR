@@ -5,6 +5,8 @@ namespace LoadingUCL.Sistema
 {
     public static class Controle
     {
+        public static string GroupId = "";
+
         public const int PontuacaoMaximaNaRodada = 50;
 
         public static List<Jogador> ListaJoadores = new List<Jogador>();
@@ -16,6 +18,8 @@ namespace LoadingUCL.Sistema
         public static string PalavraRodada;
 
         public static int JogadoresQueAcertaramNaRodada = 0;
+
+        public static int QtdVerificacoesPontuacao = 0;
 
         public static int QuantidadeRodadas = 0;
 
@@ -77,7 +81,7 @@ namespace LoadingUCL.Sistema
         {
             var jogador = ListaJoadores.Find(x => x.Nome == nomeJogador);
 
-            jogador.Pontuacao = (PontuacaoMaximaNaRodada / Controle.ListaJoadores.Count) * (Controle.ListaJoadores.Count - JogadoresQueAcertaramNaRodada);
+            jogador.Pontuacao += (PontuacaoMaximaNaRodada / Controle.ListaJoadores.Count) * (Controle.ListaJoadores.Count - JogadoresQueAcertaramNaRodada);
         }
     }
 }

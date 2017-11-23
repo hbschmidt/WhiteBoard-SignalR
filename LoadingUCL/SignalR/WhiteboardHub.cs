@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using Microsoft.AspNet.SignalR.Hubs;
 using System.Threading.Tasks;
@@ -13,17 +14,12 @@ namespace LoadingUCL.SignalR
     {
         public void JoinGroup(string groupName)
         {
-
             Groups.Add(Context.ConnectionId, groupName);
-
-
+            Controle.GroupId = groupName;
         }
         public void JoinChat(string name, string groupName)
         {
-
-
             Clients.Group(groupName).ChatJoined(name, groupName);
-
         }
 
         public void SendDraw(string drawObject, string sessionId, string groupName, string name)
@@ -41,16 +37,17 @@ namespace LoadingUCL.SignalR
             //if(Controle.ListaJoadores.Exists(x => x.Nome == name)) return;
 
             Controle.ListaJoadores.Add(Controle.ListaJoadores.Count == 0
-                ? new Jogador() {Desenhando = true, Nome = name}
-                : new Jogador() {Desenhando = false, Nome = name});
+                ? new Jogador() { Desenhando = true, Nome = name }
+                : new Jogador() { Desenhando = false, Nome = name });
 
-           
+
             Clients.Group(groupName).broadCastJogadores(Controle.ListaJoadores);
-
 
             if (Controle.ListaJoadores.Count != Controle.MinimoJogadores || Controle.PartidaIniciada) return;
 
             Controle.PartidaIniciada = true;
+
+            Controle.QtdVerificacoesPontuacao = 0;
 
             Clients.Group(groupName).broadCastInicioPartida(Controle.ListaJoadores, groupName);
         }
@@ -83,13 +80,40 @@ namespace LoadingUCL.SignalR
             Controle.RodadaAtual++;
         }
 
-        public bool VerficarMensagemPontuar(string message, string nomeJogador)
+        public bool VerficarMensagemPontuar(string message, string nomeJogadorEnviouMensagem, string nomeJogadorDaSecao)
         {
+            Controle.QtdVerificacoesPontuacao++;
+
+            if (!string.Equals(nomeJogadorEnviouMensagem, nomeJogadorDaSecao, StringComparison.CurrentCultureIgnoreCase))
+                return string.Equals(message, Controle.PalavraRodada, StringComparison.CurrentCultureIgnoreCase);
+
             if (!string.Equals(message, Controle.PalavraRodada, StringComparison.CurrentCultureIgnoreCase))
                 return false;
-            Controle.SetarPontuacao(nomeJogador);
+            Controle.SetarPontuacao(nomeJogadorEnviouMensagem);
             Controle.JogadoresQueAcertaramNaRodada++;
+            
+
+            Thread.Sleep(1000);
             return true;
+        }
+
+        public bool VerficarFimDaRodada()
+        {
+            return Controle.JogadoresQueAcertaramNaRodada == (Controle.ListaJoadores.Count - 1);
+        }
+
+        public void InicializarRodada()
+        {
+            Controle.PassarToken();
+
+            Controle.QtdVerificacoesPontuacao = 0;
+
+            Clients.Group(Controle.GroupId).broadCastInicioPartida(Controle.ListaJoadores, Controle.GroupId);
+        }
+
+        public bool VerificouTodasAsVezes()
+        {
+            return Controle.QtdVerificacoesPontuacao == Controle.ListaJoadores.Count;
         }
 
     }
