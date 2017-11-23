@@ -97,7 +97,7 @@ function DrawIt(drawObject, syncServer) {
 
             case DrawState.Started:
                 context.fillStyle = "#FFFFFF";
-                context.fillRect(drawObject.StartX, drawObject.StartY, 10, 10);
+                context.fillRect(drawObject.StartX, drawObject.StartY, 30, 30);
                 context.restore();
                 updatecanvas();
                 //context.clearRect(drawObject.StartX, drawObject.StartY, 5, 5);
@@ -105,7 +105,7 @@ function DrawIt(drawObject, syncServer) {
             case DrawState.Inprogress:
             case DrawState.Completed:
                 context.fillStyle = "#FFFFFF";
-                context.fillRect(drawObject.CurrentX, drawObject.CurrentY, 10, 10);
+                context.fillRect(drawObject.CurrentX, drawObject.CurrentY, 30, 30);
                 context.restore();
                 updatecanvas();
                 // context.clearRect(drawObject.CurrentX, drawObject.CurrentY, 5, 5);
@@ -238,19 +238,14 @@ $(document).ready(function () {
         // Activate the default tool.
         SelectTool(tool_default);
 
-        //// Attach the mousedown, mousemove and mouseup event listeners.
-        //canvas.addEventListener('mousedown', ev_canvas, false);
-        //canvas.addEventListener('mousemove', ev_canvas, false);
-        //canvas.addEventListener('mouseup', ev_canvas, false);
-        //canvas.addEventListener('mouseout', ev_canvas, false);
-        //context.clearRect(0, 0, canvas.width, canvas.height);
-        //toggleBG1();
     }
     catch (err) {
         alert(err.message);
     }
 
 });
+
+
 
 function clear(c) {
     c.clearRect(0, 0, WIDTH, HEIGHT);
@@ -632,6 +627,30 @@ function JoinHub() {
 
     $("#btnJoin").click(function () {
 
+        //BORRACHA
+        //context.fillStyle = "#FFFFFF";
+        //context.fillRect(drawObject.CurrentX, drawObject.CurrentY, 30, 30);
+        //context.restore();
+        //updatecanvas();
+
+        document.getElementById('clear').addEventListener('click', function () {
+
+            //var c = document.getElementById("whiteBoard");
+            //var ctx = c.getContext("2d");
+            //ctx.fillStyle = "red";
+            //ctx.fillRect(0, 0, 300, 150);
+            //ctx.clearRect(20, 20, 100, 50);
+
+            var c = document.getElementById("imageTemp");
+            var ctx = c.getContext("2d");
+            ctx.fillStyle = "red";
+            ctx.fillRect(0, 0, 300, 150);
+            ctx.clearRect(20, 20, 100, 50);
+            ctx.restore();
+            updatecanvas();
+
+        }, false);
+
         var name = $("#name").val();
         var name = $.trim(name);
 
@@ -756,9 +775,14 @@ function AcaoDaRodada(pintar, listaJogadores) {
 
     MontarDivListaJogadores(listaJogadores);
 
+    //context.clearRect(0, 0, canvas.width, canvas.height);
+    //clear(context);
+    //updatecanvas();
+
     if (pintar) {
 
         whiteboardHub.server.palavraDaRodada(true).done(function (palavra) {
+            $('#acaoRodadaDivTexto').html('');
             $('#acaoRodadaDivTexto')
                 .append("<h1 style=\"text-align: center\" > É a sua vez de desenhar </h1>");
             $('#acaoRodadaDivTexto')
@@ -774,11 +798,12 @@ function AcaoDaRodada(pintar, listaJogadores) {
         canvas.addEventListener('mousemove', ev_canvas, false);
         canvas.addEventListener('mouseup', ev_canvas, false);
         canvas.addEventListener('mouseout', ev_canvas, false);
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        
 
         AbrirModalAcaoRodada();
 
     } else {
+        $('#acaoRodadaDivTexto').html('');
         $('#acaoRodadaDivTexto')
             .append("<h1 style=\"text-align: center\" >É sua vez de tentar adivinhar, boa sorte!! </h1>");
 
