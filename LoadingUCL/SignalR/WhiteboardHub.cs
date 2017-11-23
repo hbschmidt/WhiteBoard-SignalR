@@ -27,6 +27,11 @@ namespace LoadingUCL.SignalR
             Clients.Group(groupName).HandleDraw(drawObject, sessionId, name);
         }
 
+        public void SendEraser(string drawObject, string sessionId, string groupName, string name)
+        {
+            Clients.Group(groupName).HandleEraser(drawObject, sessionId, name);
+        }
+
         public void SendChat(string message, string groupName, string name)
         {
             Clients.Group(groupName).Chat(name, message);

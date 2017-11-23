@@ -100,7 +100,6 @@ function DrawIt(drawObject, syncServer) {
                 context.fillRect(drawObject.StartX, drawObject.StartY, 30, 30);
                 context.restore();
                 updatecanvas();
-                //context.clearRect(drawObject.StartX, drawObject.StartY, 5, 5);
                 break;
             case DrawState.Inprogress:
             case DrawState.Completed:
@@ -108,7 +107,6 @@ function DrawIt(drawObject, syncServer) {
                 context.fillRect(drawObject.CurrentX, drawObject.CurrentY, 30, 30);
                 context.restore();
                 updatecanvas();
-                // context.clearRect(drawObject.CurrentX, drawObject.CurrentY, 5, 5);
                 break;
         }
 
@@ -522,12 +520,10 @@ function fireEvent(element, event) {
         return !element.dispatchEvent(evt);
     }
 }
-
 function UpdateCanvas() {
     var file_UploadImg = document.getElementById("fileUploadImg");
     LoadImageIntoCanvas(URL.createObjectURL(file_UploadImg.files[0]));
 }
-
 function LoadImageIntoCanvas(bgImageUrl) {
 
     var image_View = document.getElementById("imageView");
@@ -547,7 +543,6 @@ function LoadImageIntoCanvas(bgImageUrl) {
     // Activate the default tool.
     SelectTool(tool_default);
 }
-
 function SelectTool(toolName) {
     if (tools[toolName]) {
         tool = new tools[toolName]();
@@ -635,19 +630,26 @@ function JoinHub() {
 
         document.getElementById('clear').addEventListener('click', function () {
 
-            //var c = document.getElementById("whiteBoard");
-            //var ctx = c.getContext("2d");
-            //ctx.fillStyle = "red";
-            //ctx.fillRect(0, 0, 300, 150);
-            //ctx.clearRect(20, 20, 100, 50);
+            var drawObject = new DrawObject();
+            drawObject.Tool = DrawTool.Erase;
+            drawObject.currentState = DrawState.Started;
+            drawObject.StartX = 0;
+            drawObject.StartY = 0;
+            drawObject.CurrentX = 700;
+            drawObject.CurrentY = 400;
 
-            var c = document.getElementById("imageTemp");
-            var ctx = c.getContext("2d");
-            ctx.fillStyle = "red";
-            ctx.fillRect(0, 0, 300, 150);
-            ctx.clearRect(20, 20, 100, 50);
-            ctx.restore();
+            context.fillStyle = "#FFFFFF";
+            //context.fillRect(drawObject.CurrentX, drawObject.CurrentY, 30, 30);
+            context.fillRect(0, 0, 700, 400);
+            //context.clearRect(drawObject.StartX, drawObject.StartY, 100, 50);
+            context.restore();
             updatecanvas();
+
+            drawObjectsCollection = [];
+            drawObjectsCollection.push(drawObject);
+            var message = JSON.stringify(drawObjectsCollection);
+            whiteboardHub.server.sendEraser(message, $("#sessinId").val(), $("#groupName").val(), $("#userName").val());
+
 
         }, false);
 
@@ -668,6 +670,25 @@ function JoinHub() {
                     var drawObjectCollection = jQuery.parseJSON(message);
                     for (var i = 0; i < drawObjectCollection.length; i++) {
                         DrawIt(drawObjectCollection[i], false);
+                        if (drawObjectCollection[i].currentState) {
+                            if (drawObjectCollection[i].currentState == DrawState.Completed) {
+                                $("#divStatus").html("<i>" + name + " drawing completing...</i>");
+                                $("#divStatus").html("");
+                            }
+                        }
+                    }
+                }
+            };
+
+            whiteboardHub.client.handleEraser = function (message, sessnId, name) {
+                var sessId = $('#sessinId').val();
+                if (sessId != sessnId) {
+                    $("#divStatus").html("");
+
+                    $("#divStatus").html("<i>" + name + " drawing...</i>");
+                    var drawObjectCollection = jQuery.parseJSON(message);
+                    for (var i = 0; i < drawObjectCollection.length; i++) {
+                        DrawEraser(drawObjectCollection[i], false);
                         if (drawObjectCollection[i].currentState) {
                             if (drawObjectCollection[i].currentState == DrawState.Completed) {
                                 $("#divStatus").html("<i>" + name + " drawing completing...</i>");
@@ -774,10 +795,6 @@ function ConfigurarPartida() {
 function AcaoDaRodada(pintar, listaJogadores) {
 
     MontarDivListaJogadores(listaJogadores);
-
-    //context.clearRect(0, 0, canvas.width, canvas.height);
-    //clear(context);
-    //updatecanvas();
 
     if (pintar) {
 
@@ -887,6 +904,39 @@ function AbrirModalAcaoRodada() {
 function statusRodada(terminou) {
     if (terminou) {
         whiteboardHub.server.inicializarRodada();
+    }
+}
+
+function DrawEraser(drawObject, syncServer) {
+
+    if (drawObject.Tool == DrawTool.Erase) {
+
+        switch (drawObject.currentState) {
+
+        case DrawState.Started:
+            context.fillStyle = "#FFFFFF";
+            context.fillRect(drawObject.StartX, drawObject.StartY, 700, 400);
+            context.restore();
+            updatecanvas();
+            break;
+        case DrawState.Inprogress:
+        case DrawState.Completed:
+            context.fillStyle = "#FFFFFF";
+            context.fillRect(drawObject.CurrentX, drawObject.CurrentY, 700, 400);
+            context.restore();
+            updatecanvas();
+            break;
+        }
+
+
+    }
+
+    if (syncServer && drawObject.Tool != DrawTool.Pencil) {
+
+        drawObjectsCollection = [];
+        drawObjectsCollection.push(drawObject);
+        var message = JSON.stringify(drawObjectsCollection);
+        whiteboardHub.server.sendDraw(message, $("#sessinId").val(), $("#groupName").val(), $("#userName").val());
     }
 }
 
