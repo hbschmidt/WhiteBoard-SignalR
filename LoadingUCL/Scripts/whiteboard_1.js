@@ -684,13 +684,13 @@ function JoinHub() {
                 if (sessId != sessnId) {
                     $("#divStatus").html("");
 
-                    $("#divStatus").html("<i>" + name + " drawing...</i>");
+                    $("#divStatus").html("<i>" + name + " desenhando...</i>");
                     var drawObjectCollection = jQuery.parseJSON(message);
                     for (var i = 0; i < drawObjectCollection.length; i++) {
                         DrawEraser(drawObjectCollection[i], false);
                         if (drawObjectCollection[i].currentState) {
                             if (drawObjectCollection[i].currentState == DrawState.Completed) {
-                                $("#divStatus").html("<i>" + name + " drawing completing...</i>");
+                                $("#divStatus").html("<i>" + name + " completou o desenho...</i>");
                                 $("#divStatus").html("");
                             }
                         }
@@ -703,7 +703,10 @@ function JoinHub() {
                 MontarDivListaJogadores(listaJogadores);
             }
 
-            whiteboardHub.client.broadCastInicioPartida = function (listaJogadores, grupo) {
+            whiteboardHub.client.broadCastInicioPartida = function (listaJogadores, grupo, rodada) {
+
+                $('#rodadaAtual').html('');
+                $('#rodadaAtual').append("<span><i> <b> Rodada " + rodada.toString() + " <br/></b></i></span>");
 
                 whiteboardHub.server.verficarSePodeDesenhar($("#userName").val(), grupo).done(function (result) {
                     AcaoDaRodada(result, listaJogadores);
@@ -721,23 +724,11 @@ function JoinHub() {
 
             whiteboardHub.client.chat = function (name, message) {
                 VerificarMessagemEnviada(name, message);
-
-
-                whiteboardHub.server.verificouTodasAsVezes().done(function (result) {
-
-                    if (result && name == $("#userName").val()) {
-                        whiteboardHub.server.verficarFimDaRodada().done(function (fimDaRodada) {
-
-                            if (fimDaRodada) {
-                                whiteboardHub.server.inicializarRodada();
-                            }
-
-                        });
-                    }
-
-                });
-
             };
+
+            whiteboardHub.client.finalizarPartida = function (listaJogadores, melhorJogador) {
+                FinalizarPartida(listaJogadores, melhorJogador);
+            }
 
             var sendMessage = function () {
                 whiteboardHub.sendChat($(".chat-message").val(), $("#groupName").val(), $("#userName").val());
@@ -750,13 +741,13 @@ function JoinHub() {
                 whiteboardHub.server.quantidadeDeJogadores().done(function (quantidade) {
                     if (quantidade === 0) {
                         ConfigurarPartida();
-                    }                   
+                    }
                 });
 
                 whiteboardHub.server.addJogadorLista($("#userName").val(), $("#groupName").val());
 
 
-                               
+
             });
 
             $("#btnSend").click(
@@ -799,6 +790,7 @@ function AcaoDaRodada(pintar, listaJogadores) {
 
     MontarDivListaJogadores(listaJogadores);
 
+    $('#palavraRodada').html('');
     if (pintar) {
 
         whiteboardHub.server.palavraDaRodada(true).done(function (palavra) {
@@ -809,17 +801,21 @@ function AcaoDaRodada(pintar, listaJogadores) {
                 .append("<h3 style=\"text-align: center\"> A palavra escolhida é <b> " +
                 palavra +
                 " </b> </h3>");
-            $('#palavraRodada').append("<h2>"+ palavra +"</h2>");
+            $('#palavraRodada').append("<h2>" + palavra + "</h2>");
+
+
+            $("#btnSend").prop("disabled", true);
+            $("#clear").prop("disabled", false);
         });
 
-        whiteboardHub.server.inicializarDadosDeRodada();
+        //whiteboardHub.server.inicializarDadosDeRodada();
 
         // Attach the mousedown, mousemove and mouseup event listeners.
         canvas.addEventListener('mousedown', ev_canvas, false);
         canvas.addEventListener('mousemove', ev_canvas, false);
         canvas.addEventListener('mouseup', ev_canvas, false);
         canvas.addEventListener('mouseout', ev_canvas, false);
-        
+
 
         AbrirModalAcaoRodada();
 
@@ -832,6 +828,9 @@ function AcaoDaRodada(pintar, listaJogadores) {
         canvas.removeEventListener('mousemove', ev_canvas, false);
         canvas.removeEventListener('mouseup', ev_canvas, false);
         canvas.removeEventListener('mouseout', ev_canvas, false);
+
+        $("#btnSend").prop("disabled", false);
+        $("#clear").prop("disabled", true);
 
         AbrirModalAcaoRodada();
     }
@@ -863,6 +862,36 @@ function MontarDivListaJogadores(listaJogadores) {
     }
 }
 
+function FinalizarPartida(listaJogadores, melhorJogador) {
+
+
+    $('#acaoRodadaDivTexto').html('');
+    $('#acaoRodadaDivTexto')
+        .append("<h1 style=\"text-align: center\" >Parabéns ao jogador " + melhorJogador.Nome + " !! </h1>");
+    $('#acaoRodadaDivTexto')
+        .append("<h1 style=\"text-align: center\" >Foi campeão ao realizar <b>" + melhorJogador.Pontuacao + "</b> pontos !! </h1>");
+
+    AbrirModalAcaoRodada();
+
+
+    //var xTable = document.getElementById("tableJogadoresLogadosBody");
+    //xTable.innerHTML = "";
+    //for (var i = 0; i < listaJogadores.length; i++) {
+    //    var tr = document.createElement("tr");
+    //    tr.innerHTML = "<td>" + listaJogadores[i].Nome + "</td>";
+
+    //    if (listaJogadores[i].Desenhando === true) {
+    //        tr.innerHTML += "<td>Desenhista</td>";
+    //    } else {
+    //        tr.innerHTML += "<td></td>";
+    //    }
+
+    //    tr.innerHTML += "<td>" + listaJogadores[i].Pontuacao + "</td>";
+    //    xTable.appendChild(tr);
+
+    //}
+}
+
 var pararVerificarMensagemEnviada = false;
 var vTrocarRodada = false;
 
@@ -876,7 +905,7 @@ function VerificarMessagemEnviada(name, message) {
             $("#divMessage").append("<span>" + msgAcerto + "</span><br/>");
             var objDiv = document.getElementById("divMessage");
             objDiv.scrollTop = objDiv.scrollHeight;
-        
+
         } else if (result && name != $("#userName").val()) {
 
             var msgAcerto = "<button type=\"button\" class=\"btn btn-succes btn-blocks\">" + name + " : <span class=\"badge\">Acertou a palavra</span></button>";
@@ -917,19 +946,19 @@ function DrawEraser(drawObject, syncServer) {
 
         switch (drawObject.currentState) {
 
-        case DrawState.Started:
-            context.fillStyle = "#FFFFFF";
-            context.fillRect(drawObject.StartX, drawObject.StartY, 700, 400);
-            context.restore();
-            updatecanvas();
-            break;
-        case DrawState.Inprogress:
-        case DrawState.Completed:
-            context.fillStyle = "#FFFFFF";
-            context.fillRect(drawObject.CurrentX, drawObject.CurrentY, 700, 400);
-            context.restore();
-            updatecanvas();
-            break;
+            case DrawState.Started:
+                context.fillStyle = "#FFFFFF";
+                context.fillRect(drawObject.StartX, drawObject.StartY, 700, 400);
+                context.restore();
+                updatecanvas();
+                break;
+            case DrawState.Inprogress:
+            case DrawState.Completed:
+                context.fillStyle = "#FFFFFF";
+                context.fillRect(drawObject.CurrentX, drawObject.CurrentY, 700, 400);
+                context.restore();
+                updatecanvas();
+                break;
         }
 
 

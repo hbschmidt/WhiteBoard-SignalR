@@ -50,11 +50,9 @@ namespace LoadingUCL.SignalR
 
             if (Controle.ListaJoadores.Count != Controle.MinimoJogadores || Controle.PartidaIniciada) return;
 
-            Controle.PartidaIniciada = true;
+            InicializarDadosDeRodada();
 
-            Controle.QtdVerificacoesPontuacao = 0;
-
-            Clients.Group(groupName).broadCastInicioPartida(Controle.ListaJoadores, groupName);
+            Clients.Group(groupName).broadCastInicioPartida(Controle.ListaJoadores, groupName, Controle.RodadaAtual);
         }
 
         public bool VerficarSePodeDesenhar(string name, string groupName)
@@ -83,42 +81,87 @@ namespace LoadingUCL.SignalR
         {
             Controle.JogadoresQueAcertaramNaRodada = 0;
             Controle.RodadaAtual++;
+            Controle.PartidaIniciada = true;
         }
 
         public bool VerficarMensagemPontuar(string message, string nomeJogadorEnviouMensagem, string nomeJogadorDaSecao)
         {
-            Controle.QtdVerificacoesPontuacao++;
+            VerificarPalavraAnterior(message);
 
+            Controle.ListaJoadores.Find(x => x.Nome == nomeJogadorDaSecao).PontuacaoVerificada = true;
+
+            //Se o jogador da seção n é o mesmo da mensagem enviada, retornar verdadeiro se acertou a msg para colocar no painel
             if (!string.Equals(nomeJogadorEnviouMensagem, nomeJogadorDaSecao, StringComparison.CurrentCultureIgnoreCase))
                 return string.Equals(message, Controle.PalavraRodada, StringComparison.CurrentCultureIgnoreCase);
 
             if (!string.Equals(message, Controle.PalavraRodada, StringComparison.CurrentCultureIgnoreCase))
                 return false;
-            Controle.SetarPontuacao(nomeJogadorEnviouMensagem);
-            Controle.JogadoresQueAcertaramNaRodada++;
-            
 
-            Thread.Sleep(1000);
+            Controle.JogadoresQueAcertaramNaRodada++;
+            Controle.SetarPontuacao(nomeJogadorEnviouMensagem);
+
+            if (VerficarFimDaRodada())
+            {
+                Controle.PartidaIniciada = false;
+                if (!VerificarFimPartida())
+                {
+                    InicializarRodada();
+                }               
+            }
+
+
             return true;
+        }
+
+        private bool VerificarFimPartida()
+        {
+            if (Controle.RodadaAtual >= Controle.QuantidadeRodadas)
+            {
+                //Decretar o fim
+                var max = Controle.ListaJoadores.Max(x => x.Pontuacao);
+                var result = Controle.ListaJoadores.First(x => x.Pontuacao == max);
+
+                Clients.Group(Controle.GroupId).FinalizarPartida(Controle.ListaJoadores, result);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public void VerificarPalavraAnterior(string message)
+        {
+            if (message != Controle.PalavraAnterior)
+            {
+                Controle.ZerarVerificacaoDePontosDaRodada();
+            }
+
+            Controle.PalavraAnterior = message;
         }
 
         public bool VerficarFimDaRodada()
         {
-            return Controle.JogadoresQueAcertaramNaRodada == (Controle.ListaJoadores.Count - 1);
+            var exists = Controle.ListaJoadores.Exists(jogador => jogador.PontuacaoVerificada = false);
+            return Controle.JogadoresQueAcertaramNaRodada == (Controle.ListaJoadores.Count - 1) && !exists;
         }
 
         public void InicializarRodada()
         {
+            if (Controle.PartidaIniciada) return;
+
             Controle.PassarToken();
 
-            Controle.QtdVerificacoesPontuacao = 0;
+            Controle.ZerarVerificacaoDePontosDaRodada();
 
-            Clients.Group(Controle.GroupId).broadCastInicioPartida(Controle.ListaJoadores, Controle.GroupId);
+            InicializarDadosDeRodada();
+
+            Clients.Group(Controle.GroupId).broadCastInicioPartida(Controle.ListaJoadores, Controle.GroupId, Controle.RodadaAtual);
         }
 
         public bool VerificouTodasAsVezes()
         {
-            return Controle.QtdVerificacoesPontuacao == Controle.ListaJoadores.Count;
+            var exists = Controle.ListaJoadores.Exists(jogador => jogador.PontuacaoVerificada = false);
+            return !exists;
         }
 
     }

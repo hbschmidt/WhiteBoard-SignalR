@@ -19,8 +19,6 @@ namespace LoadingUCL.Sistema
 
         public static int JogadoresQueAcertaramNaRodada = 0;
 
-        public static int QtdVerificacoesPontuacao = 0;
-
         public static int QuantidadeRodadas = 0;
 
         public static int RodadaAtual = 0;
@@ -30,7 +28,7 @@ namespace LoadingUCL.Sistema
         static Controle()
         {
             ListaDeDesenhos.Add("casa");
-            ListaDeDesenhos.Add("aviao");
+            ListaDeDesenhos.Add("avião");
             ListaDeDesenhos.Add("carro");
             ListaDeDesenhos.Add("faculdade");
             ListaDeDesenhos.Add("igreja");
@@ -47,7 +45,7 @@ namespace LoadingUCL.Sistema
             ListaDeDesenhos.Add("balão");
             ListaDeDesenhos.Add("festa");
             ListaDeDesenhos.Add("montanha");
-            ListaDeDesenhos.Add("piramide");
+            ListaDeDesenhos.Add("pirâmide");
             ListaDeDesenhos.Add("buraco negro");
         }
 
@@ -61,9 +59,14 @@ namespace LoadingUCL.Sistema
 
         }
 
+        public static string PalavraAnterior = "";
+
+        public static int testeQtd = 0;
+
         public static void PassarToken()
         {
-            var indiceDesenhista = ListaJoadores.IndexOf(ListaJoadores.Find(x => x.Desenhando = true));
+            var indiceDesenhista = ListaJoadores.IndexOf(ListaJoadores.Find(x => x.Desenhando == true));
+           
 
             ListaJoadores[indiceDesenhista].Desenhando = false;
 
@@ -81,7 +84,13 @@ namespace LoadingUCL.Sistema
         {
             var jogador = ListaJoadores.Find(x => x.Nome == nomeJogador);
 
-            jogador.Pontuacao += (PontuacaoMaximaNaRodada / Controle.ListaJoadores.Count) * (Controle.ListaJoadores.Count - JogadoresQueAcertaramNaRodada);
+            jogador.Pontuacao += (PontuacaoMaximaNaRodada - (JogadoresQueAcertaramNaRodada - 1)* 2);
+        }
+
+        public static void ZerarVerificacaoDePontosDaRodada()
+        {
+            foreach (var j in ListaJoadores)
+                j.PontuacaoVerificada = false;
         }
     }
 }

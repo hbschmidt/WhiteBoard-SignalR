@@ -10,5 +10,6 @@ namespace LoadingUCL.Sistema
         public string Nome { get; set; }
         public bool Desenhando { get; set; }
         public double Pontuacao { get; set; }
+        public bool PontuacaoVerificada { get; set; } = false;
     }
 }

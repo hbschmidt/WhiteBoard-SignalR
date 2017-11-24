@@ -45,15 +45,15 @@
                         <img id="imgline" style="border-color: Gray; border-style: dashed; width: 32px; height: 32px"
                              src="/images/line_dim.png" onclick="SelectTool('line'); return false;" />
                         <img id="imgpencil" style="border-color: Gray; border-style: dashed; width: 32px;
-                            height: 32px" src="/images/pencil_dim.png" onclick="SelectTool('pencil'); return false;" />
+                                                                                                                                                                                                                                                                                                                                                                         height: 32px" src="/images/pencil_dim.png" onclick="SelectTool('pencil'); return false;" />
                         <img id="imgrect" style="border-color: Gray; border-style: dashed; width: 32px; height: 32px"
                              src="/images/rect_dim.png" onclick="SelectTool('rect'); return false;" />
                         <img id="imgtext" style="border-color: Gray; border-style: dashed; width: 32px; height: 32px"
                              src="/images/text_dim.png" onclick="SelectTool('text'); return false;" />
                         <img id="imgerase" style="border-color: Gray; border-style: dashed; width: 32px;
-                            height: 32px" src="/images/erase_dim.png" onclick="SelectTool('erase'); return false;" />
+                                                                                                                                                                                                                                                                                                                           height: 32px" src="/images/erase_dim.png" onclick="SelectTool('erase'); return false;" />
                         <img id="imgSave" style="border: 0; border-style: dashed; width: 32px; height: 32px"
-                             src="/images/save.png" onclick="SaveDrawings(); return false;" />                       
+                             src="/images/save.png" onclick="SaveDrawings(); return false;" />
                         <div id="buttons">
                             <input type="button" id="clear" value="Clear">
                         </div>
@@ -72,34 +72,37 @@
         </td>
         <td valign="top">
             <div id="divShare" style="border-width: 2px; width: 350px; border-color: black; padding: 10px;
-                background-color: Silver; color: Teal;">
+                                                                                                                                                                                                                                                                                                                                         background-color: Silver; color: Teal;">
                 <table width="195px" style="table-layout: fixed;">
                     <colgroup>
                         <col style="width: 195px;" />
                     </colgroup>
                     <tbody>
-                        <tr>
-                            <td id="palavraRodada"></td>
-                        <tr>
-                        <tr>
-                            <td>
-                                <span>
-                                    <i>
-                                        <b>Convide </b>, compartilhe o Desenhei! Usando o link abaixo ou clicando nele para abrir em uma nova janela
-                                        e jogar com seus amigos.
-                                    </i>
-                                    <br />
-                                    <a href="@ViewData["url"]" target="_blank">@ViewData["url"]</a>
-                                    <br />
-                                </span>
-                            </td>
-                        </tr>
+                    <tr>
+                    <td id="rodadaAtual"></td>
+                    <tr>
+                    <tr>
+                    <td id="palavraRodada"></td>
+                    <tr>
+                    <tr>
+                        <td>
+                            <span>
+                                <i>
+                                    <b>Convide </b>, compartilhe o Desenhei! Usando o link abaixo ou clicando nele para abrir em uma nova janela
+                                    e jogar com seus amigos.
+                                </i>
+                                <br />
+                                <a href="@ViewData["url"]" target="_blank">@ViewData["url"]</a>
+                                <br />
+                            </span>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
             <br />
             <div id="divMessage" style="height: 150px; width: 350px; padding: 2px; border: 2px,solid,black;
-                background-color: White; overflow: scroll">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               background-color: White; overflow: scroll">
             </div>
             <textarea rows="2" cols="25" id="txtMessage" style="width: 220px"></textarea>
             <input type="button" id="btnSend" value="Enviar" />
@@ -111,8 +114,24 @@
         </td>
     </tr>
 </table>
+    
+<div id="divJogadores">
+    <table class="table table-dark" id="tableJogadoresLogados">
+        <thead>
+        <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Tafera</th>
+            <th scope="col">Pontuação</th>
+        </tr>
+        </thead>
+        <tbody id="tableJogadoresLogadosBody"></tbody>
+    </table>
+</div>
+
+
 <input type="hidden" id="sessinId" value="@Session.SessionID" />
 <input type="hidden" id="groupName" value="@ViewData["GroupName"]" />
+
 <script type="text/javascript">
     if (Modernizr.canvas) {
 
