@@ -42,20 +42,34 @@
             <table style="vertical-align: top; width: 100%;" cellpadding="0" cellspacing="0">
                 <tr>
                     <td>
-                        <img id="imgline" style="border-color: Gray; border-style: dashed; width: 32px; height: 32px"
-                             src="/images/line_dim.png" onclick="SelectTool('line'); return false;" />
-                        <img id="imgpencil" style="border-color: Gray; border-style: dashed; width: 32px;
-                                                                                                                                                                                                                                                                                                                                                                         height: 32px" src="/images/pencil_dim.png" onclick="SelectTool('pencil'); return false;" />
-                        <img id="imgrect" style="border-color: Gray; border-style: dashed; width: 32px; height: 32px"
-                             src="/images/rect_dim.png" onclick="SelectTool('rect'); return false;" />
-                        <img id="imgtext" style="border-color: Gray; border-style: dashed; width: 32px; height: 32px"
-                             src="/images/text_dim.png" onclick="SelectTool('text'); return false;" />
-                        <img id="imgerase" style="border-color: Gray; border-style: dashed; width: 32px;
-                                                                                                                                                                                                                                                                                                                           height: 32px" src="/images/erase_dim.png" onclick="SelectTool('erase'); return false;" />
-                        <img id="imgSave" style="border: 0; border-style: dashed; width: 32px; height: 32px"
-                             src="/images/save.png" onclick="SaveDrawings(); return false;" />
+                        <!--<img id="imgSave" style="border: 0; border-style: dashed; width: 32px; height: 32px"
+                        src="/images/save.png" onclick="SaveDrawings(); return false;" />-->
+                        <i class="fa fa-floppy-o" aria-hidden="true" id="imgSave" onclick="SaveDrawings(); return false;"></i>
+
+
+                        <!--<img id="imgline" style="border-color: Gray; border-style: dashed; width: 32px; height: 32px"
+                             src="/images/line_dim.png" onclick="SelectTool('line'); return false;" />-->
+                        <i class="fa fa-expand" aria-hidden="true" id="imgline" onclick="SelectTool('line'); return false;"></i>
+
+                        <!--<img id="imgpencil" style="border-color: Gray; border-style: dashed; width: 32px;
+                        height: 32px" src="/images/pencil_dim.png" onclick="SelectTool('pencil'); return false;" />-->
+                        <i class="fa fa-pencil" aria-hidden="true" id="imgpencil"  onclick="SelectTool('pencil'); return false;"></i>
+                        
+                        <!--<img id="imgrect" style="border-color: Gray; border-style: dashed; width: 32px; height: 32px"
+                             src="/images/rect_dim.png" onclick="SelectTool('rect'); return false;" />-->
+                        <i class="fa fa-square-o" aria-hidden="true" id="imgrect" onclick="SelectTool('rect'); return false;"></i>
+                        
+                        <!--<img id="imgtext" style="border-color: Gray; border-style: dashed; width: 32px; height: 32px"
+                             src="/images/text_dim.png" onclick="SelectTool('text'); return false;" />-->
+                        <i class="fa fa-text-width" aria-hidden="true" id="imgtext" onclick="SelectTool('text'); return false;"></i>
+                        
+                        <!--<img id="imgerase" style="border-color: Gray; border-style: dashed; width: 32px;
+                        height: 32px" src="/images/erase_dim.png" onclick="SelectTool('erase'); return false;" />-->
+                        <i class="fa fa-eraser" aria-hidden="true" id="imgerase" onclick="SelectTool('erase'); return false;"></i>
+                        
+                         
                         <div id="buttons">
-                            <input type="button" id="clear" value="Clear">
+                            <input type="button" id="clear" value="Limpar">
                         </div>
                     </td>
                 </tr>
@@ -72,7 +86,7 @@
         </td>
         <td valign="top">
             <div id="divShare" style="border-width: 2px; width: 350px; border-color: black; padding: 10px;
-                                                                                                                                                                                                                                                                                                                                         background-color: Silver; color: Teal;">
+            background-color: #B0C4DE; color: #000000;">
                 <table width="195px" style="table-layout: fixed;">
                     <colgroup>
                         <col style="width: 195px;" />
@@ -104,12 +118,12 @@
             <div id="divMessage" style="height: 150px; width: 350px; padding: 2px; border: 2px,solid,black;
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                background-color: White; overflow: scroll">
             </div>
-            <textarea rows="2" cols="25" id="txtMessage" style="width: 220px"></textarea>
+            <textarea rows="2" cols="25" id="txtMessage" style="width: 350px; min-height:70px; max-height:70px"></textarea>
             <input type="button" id="btnSend" value="Enviar" />
             <div id="divStatus">
             </div>
             <p>
-                &copy; @DateTime.Now.Year - Desenhei ;) by Loading...
+                &copy; @DateTime.Now.Year - Desenhei ;) by <i class="fa fa-code" aria-hidden="true"></i> Loading...
             </p>
         </td>
     </tr>
